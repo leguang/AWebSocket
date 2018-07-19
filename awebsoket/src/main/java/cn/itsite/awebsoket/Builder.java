@@ -96,7 +96,9 @@ public class Builder {
         return build().getObservable();
     }
 
-    public void connect() {
-        buildObservable().subscribe();
+    public Observable<WebSocketInfo> connect() {
+        Observable<WebSocketInfo> observable = buildObservable();
+        observable.subscribe();
+        return observable;
     }
 }
