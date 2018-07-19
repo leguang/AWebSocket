@@ -371,6 +371,7 @@ public class RxWebSocket {
             webSocket = getClient().newWebSocket(getRequest(url), new WebSocketListener() {
                 @Override
                 public void onOpen(final WebSocket webSocket, Response response) {
+                    heartbeat();
                     if (isLog) {
                         Log.d(logTag, " onOpen-->" + response.toString());
                     }
