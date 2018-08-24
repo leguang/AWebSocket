@@ -29,6 +29,7 @@ public class Builder {
     public String url;
     public long heartbeatInterval;
     public TimeUnit heartbeatIntervalUnit;
+    public String ping;
 
     /**
      * set your client
@@ -70,7 +71,7 @@ public class Builder {
         return this;
     }
 
-    public Builder setShowLog(boolean isLog, String logTag) {
+    public Builder setLog(boolean isLog, String logTag) {
         this.isLog = isLog;
         this.logTag = logTag;
         return this;
@@ -81,9 +82,10 @@ public class Builder {
         return this;
     }
 
-    public Builder setHeartbeat(long period, TimeUnit heartbeatUnit) {
+    public Builder setHeartbeat(long period, TimeUnit heartbeatUnit, String ping) {
         this.heartbeatInterval = period;
         this.heartbeatIntervalUnit = heartbeatUnit;
+        this.ping = ping;
         return this;
     }
 

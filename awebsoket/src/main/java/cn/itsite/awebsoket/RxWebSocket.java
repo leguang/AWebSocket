@@ -41,12 +41,12 @@ import okio.ByteString;
  * @description:
  */
 public class RxWebSocket {
+    private String logTag = RxWebSocket.class.getSimpleName();
     private OkHttpClient client;
     private Request request;
     private WebSocket webSocket;
     private Observable<WebSocketInfo> observable;
     private boolean isLog;
-    private String logTag = "WsHelper";
     private long reconnectInterval = 1;
     private TimeUnit reconnectIntervalTimeUnit = TimeUnit.SECONDS;
     private String url;
@@ -54,6 +54,7 @@ public class RxWebSocket {
     private X509TrustManager trustManager;
     private long heartbeatInterval;
     private TimeUnit heartbeatIntervalUnit;
+    private String ping;
     private CompositeDisposable mCompositeDisposable;
     private Scheduler.Worker worker = Schedulers.io().createWorker();
     private Disposable heartbeatDisposable;
@@ -72,6 +73,7 @@ public class RxWebSocket {
         url = builder.url;
         heartbeatInterval = builder.heartbeatInterval;
         heartbeatIntervalUnit = builder.heartbeatIntervalUnit;
+        ping = builder.ping;
         getObservable();
     }
 
@@ -305,10 +307,10 @@ public class RxWebSocket {
     }
 
     public void heartbeat() {
-        heartbeat(heartbeatInterval, heartbeatIntervalUnit);
+        heartbeat(heartbeatInterval, heartbeatIntervalUnit, ping);
     }
 
-    public void heartbeat(long period, TimeUnit unit) {
+    public void heartbeat(long period, TimeUnit unit, String ping) {
         if (period == 0) {
             return;
         }
@@ -317,14 +319,8 @@ public class RxWebSocket {
             heartbeatDisposable.dispose();
         }
 
-        final String ping = WsMessage.heartbeat();
         heartbeatDisposable = Observable.interval(period, period, unit)
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        asyncSend(ping);
-                    }
-                });
+                .subscribe(l -> asyncSend(ping));
         add(heartbeatDisposable);
     }
 
