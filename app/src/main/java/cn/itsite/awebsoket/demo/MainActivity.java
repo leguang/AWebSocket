@@ -18,19 +18,20 @@ import io.reactivex.functions.Consumer;
 import okio.ByteString;
 
 public class MainActivity extends AppCompatActivity {
+    private EditText etUrl;
+    private Button connect;
     private EditText editText0;
     private Button send0;
-    private TextView textview0;
+    private TextView message0;
     private EditText editText1;
     private Button send1;
-    private TextView textview1;
-    private Button centect0;
-    private Button centect1;
-    private Button discentect0;
-    private Button discentect1;
+    private TextView message1;
+    private Button subscribe0;
+    private Button subscribe1;
+    private Button disconnect0;
+    private Button disconnect1;
     private Disposable mDisposable0;
     private Disposable mDisposable1;
-    private String url = "wss://push.biotifo.com/mol_wallet_push/core/mola3fb777fed444e97a2ed9624fcebf244";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,29 +39,36 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         setListener();
-        WsHelper.builder()
-                .setLog(true)
-                .setHeartbeat(3000, TimeUnit.MILLISECONDS)
-                .setReconnectInterval(3000, TimeUnit.MILLISECONDS)
-                .setUrl(url)
-//                .build();
-                .connect();
     }
 
     private void initView() {
+        etUrl = findViewById(R.id.et_url);
+        connect = findViewById(R.id.connect);
         editText0 = findViewById(R.id.editText0);
         editText1 = findViewById(R.id.editText1);
         send0 = findViewById(R.id.send0);
         send1 = findViewById(R.id.send1);
-        centect0 = findViewById(R.id.centect0);
-        centect1 = findViewById(R.id.centect1);
-        discentect0 = findViewById(R.id.discentect0);
-        discentect1 = findViewById(R.id.discentect1);
-        textview0 = findViewById(R.id.textview0);
-        textview1 = findViewById(R.id.textview1);
+        subscribe0 = findViewById(R.id.subscribe0);
+        subscribe1 = findViewById(R.id.subscribe1);
+        disconnect0 = findViewById(R.id.disconnect0);
+        disconnect1 = findViewById(R.id.disconnect1);
+        message0 = findViewById(R.id.message0);
+        message1 = findViewById(R.id.message1);
     }
 
     private void setListener() {
+        connect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WsHelper.builder()
+                        .setLog(true)
+//                        .setHeartbeat(3000, TimeUnit.MILLISECONDS, "")
+//                        .setReconnectInterval(3000, TimeUnit.MILLISECONDS)
+                        .setUrl(etUrl.getText().toString().trim())
+                        .connect();
+            }
+        });
+
         send0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 WsHelper.asyncSend(message);
             }
         });
-        centect0.setOnClickListener(new View.OnClickListener() {
+        subscribe0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDisposable0 = WsHelper.getObservable()
@@ -90,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     String string = webSocketInfo.getString();
                                     if (string != null) {
-                                        textview0.setText(Html.fromHtml(string));
+                                        message0.setText(Html.fromHtml(string));
 
                                     }
 
@@ -106,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        centect1.setOnClickListener(new View.OnClickListener() {
+        subscribe1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDisposable1 = WsHelper.getObservable()
@@ -120,14 +128,13 @@ public class MainActivity extends AppCompatActivity {
 
                                     String string = webSocketInfo.getString();
                                     if (string != null) {
-                                        textview1.setText(Html.fromHtml(string));
+                                        message1.setText(Html.fromHtml(string));
 
                                     }
 
                                     ByteString byteString = webSocketInfo.getByteString();
                                     if (byteString != null) {
                                         Log.d("MainActivity", "webSocketInfo.getByteString():" + byteString);
-
                                     }
                                 }
 
@@ -136,19 +143,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        discentect0.setOnClickListener(new View.OnClickListener() {
+        disconnect0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDisposable0.dispose();
-                textview0.setText("");
+                if (mDisposable0 != null) {
+                    mDisposable0.dispose();
+                }
+                message0.setText("");
             }
         });
-        discentect1.setOnClickListener(new View.OnClickListener() {
+        disconnect1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDisposable1.dispose();
-                textview1.setText("");
-
+                if (mDisposable1 != null) {
+                    mDisposable1.dispose();
+                }
+                message1.setText("");
             }
         });
     }

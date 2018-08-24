@@ -310,7 +310,7 @@ public class RxWebSocket {
         heartbeat(heartbeatInterval, heartbeatIntervalUnit, ping);
     }
 
-    public void heartbeat(long period, TimeUnit unit, String ping) {
+    public void heartbeat(long period, TimeUnit unit, final String ping) {
         if (period == 0) {
             return;
         }
@@ -320,7 +320,12 @@ public class RxWebSocket {
         }
 
         heartbeatDisposable = Observable.interval(period, period, unit)
-                .subscribe(l -> asyncSend(ping));
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) {
+                        asyncSend(ping);
+                    }
+                });
         add(heartbeatDisposable);
     }
 

@@ -1,108 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <EditText
-            android:id="@+id/editText0"
-            android:layout_width="267dp"
-            android:layout_height="43dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            tools:layout_editor_absoluteY="0dp" />
+            android:id="@+id/et_url"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <Button
-            android:id="@+id/send0"
+            android:id="@+id/connect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="发送"
-            tools:layout_editor_absoluteY="1dp" />
-
-        <Button
-            android:id="@+id/centect0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="连接0" />
-
-
-        <Button
-            android:id="@+id/discentect0"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="关闭0" />
-
-
-        <TextView
-            android:id="@+id/textview0"
-            android:layout_width="383dp"
-            android:layout_height="393dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="message" />
+            android:text="连接" />
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/editText1"
-            android:layout_width="267dp"
-            android:layout_height="43dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            tools:layout_editor_absoluteY="0dp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-        <Button
-            android:id="@+id/send1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:text="发送"
-            tools:layout_editor_absoluteY="1dp" />
+            <EditText
+                android:id="@+id/editText0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/centect1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="连接1" />
+            <Button
+                android:id="@+id/send0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="发送0" />
 
-        <Button
-            android:id="@+id/discentect1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:text="关闭1" />
+            <Button
+                android:id="@+id/subscribe0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="连接0" />
 
-        <TextView
-            android:id="@+id/textview1"
-            android:layout_width="383dp"
-            android:layout_height="393dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="message" />
+
+            <Button
+                android:id="@+id/disconnect0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="关闭0" />
+
+
+            <TextView
+                android:id="@+id/message0"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="message0" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#000" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/editText1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/send1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="发送1" />
+
+            <Button
+                android:id="@+id/subscribe1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="连接1" />
+
+            <Button
+                android:id="@+id/disconnect1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="关闭1" />
+
+            <TextView
+                android:id="@+id/message1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="message1" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
