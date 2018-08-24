@@ -3,13 +3,12 @@ package cn.itsite.awebsoket.demo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import java.util.concurrent.TimeUnit;
 
 import cn.itsite.awebsoket.WebSocketInfo;
 import cn.itsite.awebsoket.WsHelper;
@@ -60,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
         connect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String url = etUrl.getText().toString().trim();
+                if (TextUtils.isEmpty(url)) {
+                    return;
+                }
                 WsHelper.builder()
                         .setLog(true)
 //                        .setHeartbeat(3000, TimeUnit.MILLISECONDS, "")
@@ -87,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
         subscribe0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (WsHelper.getObservable() == null) {
+                    return;
+                }
                 mDisposable0 = WsHelper.getObservable()
                         .subscribe(new Consumer<WebSocketInfo>() {
                             @Override
@@ -105,10 +111,8 @@ public class MainActivity extends AppCompatActivity {
                                     ByteString byteString = webSocketInfo.getByteString();
                                     if (byteString != null) {
                                         Log.d("MainActivity", "webSocketInfo.getByteString():" + byteString);
-
                                     }
                                 }
-
                             }
                         });
             }
@@ -117,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
         subscribe1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (WsHelper.getObservable() == null) {
+                    return;
+                }
                 mDisposable1 = WsHelper.getObservable()
                         .subscribe(new Consumer<WebSocketInfo>() {
                             @Override
