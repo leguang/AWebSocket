@@ -35,14 +35,11 @@ public abstract class WebSocketSubscriber implements Observer<WebSocketInfo> {
             onMessage(webSocketInfo.getByteString());
         } else if (webSocketInfo.isOnReconnect()) {
             onReconnect();
+        } else if (webSocketInfo.isOnClosing()) {
+            onClosing();
         }
     }
 
-    /**
-     * Callback when the WebSocket is opened
-     *
-     * @param webSocket
-     */
     protected void onOpen(@NonNull WebSocket webSocket) {
     }
 
@@ -52,26 +49,15 @@ public abstract class WebSocketSubscriber implements Observer<WebSocketInfo> {
     protected void onMessage(@NonNull ByteString byteString) {
     }
 
-    /**
-     * Callback when the WebSocket is reconnecting
-     */
     protected void onReconnect() {
     }
 
-    protected void onClose() {
-    }
-
-    public final void dispose() {
-        if (disposable != null) {
-            disposable.dispose();
-        }
+    protected void onClosing() {
     }
 
     @Override
-    public final void onComplete() {
-        if (hasOpened) {
-            onClose();
-        }
+    public void onComplete() {
+
     }
 
     @Override
@@ -79,4 +65,9 @@ public abstract class WebSocketSubscriber implements Observer<WebSocketInfo> {
         e.printStackTrace();
     }
 
+    public void dispose() {
+        if (disposable != null) {
+            disposable.dispose();
+        }
+    }
 }

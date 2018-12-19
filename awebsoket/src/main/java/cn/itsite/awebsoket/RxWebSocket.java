@@ -63,9 +63,9 @@ public class RxWebSocket {
     }
 
     public RxWebSocket(Builder builder) {
+        Utils.isLog = builder.isLog;
         reconnectInterval = builder.reconnectInterval;
         reconnectIntervalTimeUnit = builder.reconnectIntervalTimeUnit;
-        isLog = builder.isLog;
         logTag = builder.logTag;
         client = builder.client;
         sslSocketFactory = builder.sslSocketFactory;
@@ -157,9 +157,7 @@ public class RxWebSocket {
                     .doOnDispose(new Action() {
                         @Override
                         public void run() throws Exception {
-                            if (isLog) {
-                                Log.d(logTag, "OnDispose");
-                            }
+                            Utils.log(logTag, "OnDispose");
                         }
                     })
                     .doOnNext(new Consumer<WebSocketInfo>() {
@@ -175,7 +173,6 @@ public class RxWebSocket {
                     .observeOn(AndroidSchedulers.mainThread());
         } else {
             if (webSocket != null) {
-                Log.e("startWith", "startWith");
                 observable = observable.startWith(new WebSocketInfo(webSocket, true));
             }
         }
@@ -373,9 +370,7 @@ public class RxWebSocket {
                 @Override
                 public void onOpen(final WebSocket webSocket, Response response) {
                     heartbeat();
-                    if (isLog) {
-                        Log.d(logTag, " onOpen-->" + response.toString());
-                    }
+                    Utils.log(logTag, "onOpen-->" + response.toString());
                     if (!emitter.isDisposed()) {
                         emitter.onNext(new WebSocketInfo(webSocket, true));
                     }
@@ -383,9 +378,7 @@ public class RxWebSocket {
 
                 @Override
                 public void onMessage(WebSocket webSocket, String text) {
-                    if (isLog) {
-                        Log.d(logTag, " onMessage-->" + text);
-                    }
+                    Utils.log(logTag, "onMessage-->" + text);
                     if (!emitter.isDisposed()) {
                         emitter.onNext(new WebSocketInfo(webSocket, text));
                     }
@@ -393,9 +386,7 @@ public class RxWebSocket {
 
                 @Override
                 public void onMessage(WebSocket webSocket, ByteString bytes) {
-                    if (isLog) {
-                        Log.d(logTag, " onMessage-->" + bytes.toString());
-                    }
+                    Utils.log(logTag, "onMessage-->" + bytes.toString());
                     if (!emitter.isDisposed()) {
                         emitter.onNext(new WebSocketInfo(webSocket, bytes));
                     }
@@ -403,11 +394,9 @@ public class RxWebSocket {
 
                 @Override
                 public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                    if (isLog) {
-                        Log.e(logTag, "onFailure-->" + "Throwable-->" + t.toString()
-                                        + "WebSocket-->" + webSocket.request().toString()
-                                /* + "Response-->" + response.toString()*/);
-                    }
+                    Utils.log(logTag, "onFailure-->" + "Throwable-->" + t.toString()
+                                    + "WebSocket-->" + webSocket.request().toString()
+                            /* + "Response-->" + response.toString()*/);
                     if (!emitter.isDisposed()) {
                         emitter.onError(t);
                     }
@@ -415,18 +404,23 @@ public class RxWebSocket {
 
                 @Override
                 public void onClosing(WebSocket webSocket, int code, String reason) {
-                    if (isLog) {
-                        Log.e(logTag, "onClosing-->" + "WebSocket-->" + webSocket.request().toString()
-                                + "code-->" + code + "reason-->" + reason);
-                    }
+                    Utils.log(logTag, "onClosing-->" + "WebSocket-->" + webSocket.request().toString()
+                            + "code-->" + code + "reason-->" + reason);
                     webSocket.close(1000, null);
+
+                    if (!emitter.isDisposed()) {
+                        WebSocketInfo webSocketInfo = new WebSocketInfo(webSocket);
+                        webSocketInfo.setOnClosing(true);
+                        emitter.onNext(webSocketInfo);
+                    }
                 }
 
                 @Override
                 public void onClosed(WebSocket webSocket, int code, String reason) {
-                    if (isLog) {
-                        Log.e(logTag, "onClosed-->" + "WebSocket-->" + webSocket.request().toString()
-                                + "code-->" + code + "reason-->" + reason);
+                    Utils.log(logTag, "onClosed-->" + "WebSocket-->" + webSocket.request().toString()
+                            + "code-->" + code + "reason-->" + reason);
+                    if (!emitter.isDisposed()) {
+                        emitter.onComplete();
                     }
                 }
             });
@@ -434,9 +428,7 @@ public class RxWebSocket {
                 @Override
                 public void cancel() throws Exception {
                     webSocket.close(3000, "close WebSocket");
-                    if (isLog) {
-                        Log.e(logTag, url + " --> cancel ");
-                    }
+                    Utils.log(logTag, url + " --> cancel");
                 }
             });
         }

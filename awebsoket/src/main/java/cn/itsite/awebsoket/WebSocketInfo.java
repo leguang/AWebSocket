@@ -12,28 +12,33 @@ import okio.ByteString;
  * @description:
  */
 public class WebSocketInfo {
-    private WebSocket mWebSocket;
-    private String mString;
-    private ByteString mByteString;
+    private WebSocket webSocket;
+    private String text;
+    private ByteString byteString;
     private boolean onOpen;
+    private boolean onClosing;
     private boolean onReconnect;
 
     private WebSocketInfo() {
     }
 
+    WebSocketInfo(WebSocket webSocket) {
+        this.webSocket = webSocket;
+    }
+
     WebSocketInfo(WebSocket webSocket, boolean onOpen) {
-        mWebSocket = webSocket;
+        this.webSocket = webSocket;
         this.onOpen = onOpen;
     }
 
-    WebSocketInfo(WebSocket webSocket, String mString) {
-        mWebSocket = webSocket;
-        this.mString = mString;
+    WebSocketInfo(WebSocket webSocket, String text) {
+        this.webSocket = webSocket;
+        this.text = text;
     }
 
     WebSocketInfo(WebSocket webSocket, ByteString byteString) {
-        mWebSocket = webSocket;
-        mByteString = byteString;
+        this.webSocket = webSocket;
+        this.byteString = byteString;
     }
 
     static WebSocketInfo createReconnect() {
@@ -43,34 +48,58 @@ public class WebSocketInfo {
     }
 
     public WebSocket getWebSocket() {
-        return mWebSocket;
+        return this.webSocket;
     }
 
     public void setWebSocket(WebSocket webSocket) {
-        mWebSocket = webSocket;
+        this.webSocket = webSocket;
     }
 
     public String getString() {
-        return mString;
+        return text;
     }
 
     public void setString(String string) {
-        this.mString = string;
+        this.text = string;
     }
 
     public ByteString getByteString() {
-        return mByteString;
+        return byteString;
     }
 
     public void setByteString(ByteString byteString) {
-        mByteString = byteString;
+        this.byteString = byteString;
     }
 
     public boolean isOnOpen() {
         return onOpen;
     }
 
+    public void setOnOpen(boolean onOpen) {
+        this.onOpen = onOpen;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public boolean isOnReconnect() {
         return onReconnect;
+    }
+
+    public void setOnReconnect(boolean onReconnect) {
+        this.onReconnect = onReconnect;
+    }
+
+    public boolean isOnClosing() {
+        return onClosing;
+    }
+
+    public void setOnClosing(boolean onClosing) {
+        this.onClosing = onClosing;
     }
 }
