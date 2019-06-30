@@ -7,6 +7,7 @@ import javax.net.ssl.X509TrustManager;
 
 import io.reactivex.Observable;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 
 /**
  * @author: leguang
@@ -27,6 +28,7 @@ public class Builder {
     public SSLSocketFactory sslSocketFactory;
     public X509TrustManager trustManager;
     public String url;
+    public Request request;
     public long heartbeatInterval;
     public TimeUnit heartbeatIntervalUnit;
     public String ping;
@@ -79,6 +81,11 @@ public class Builder {
 
     public Builder setUrl(String url) {
         this.url = url;
+        return this;
+    }
+
+    public Builder setRequest(Request request) {
+        this.request = request;
         return this;
     }
 

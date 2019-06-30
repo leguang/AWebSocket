@@ -71,6 +71,7 @@ public class RxWebSocket {
         sslSocketFactory = builder.sslSocketFactory;
         trustManager = builder.trustManager;
         url = builder.url;
+        request = builder.request;
         heartbeatInterval = builder.heartbeatInterval;
         heartbeatIntervalUnit = builder.heartbeatIntervalUnit;
         ping = builder.ping;
