@@ -21,7 +21,7 @@ public class Builder {
     public long reconnectInterval = 1;
     public TimeUnit reconnectIntervalTimeUnit = TimeUnit.SECONDS;
     public boolean isLog = false;
-    public String logTag = "WsHelper";
+    public String logTag = "WebSocketManager";
     public OkHttpClient client = new OkHttpClient.Builder()
             .retryOnConnectionFailure(true)
             .build();
@@ -96,17 +96,17 @@ public class Builder {
         return this;
     }
 
-    public WsHelper build() {
-        return WsHelper.getInstance()
+    public WebSocketManager build() {
+        return WebSocketManager.getInstance()
                 .setRxWebSocket(new RxWebSocket(this));
     }
 
-    public Observable<WebSocketInfo> buildObservable() {
+    public Observable<WebSocketWrapper> buildObservable() {
         return build().getObservable();
     }
 
-    public Observable<WebSocketInfo> connect() {
-        Observable<WebSocketInfo> observable = buildObservable();
+    public Observable<WebSocketWrapper> connect() {
+        Observable<WebSocketWrapper> observable = buildObservable();
         observable.subscribe();
         return observable;
     }

@@ -41,11 +41,11 @@ import okio.ByteString;
  * @description:
  */
 public class RxWebSocket {
-    private String logTag = RxWebSocket.class.getSimpleName();
+    private String TAG = RxWebSocket.class.getSimpleName();
     private OkHttpClient client;
     private Request request;
     private WebSocket webSocket;
-    private Observable<WebSocketInfo> observable;
+    private Observable<WebSocketWrapper> observable;
     private boolean isLog;
     private long reconnectInterval = 1;
     private TimeUnit reconnectIntervalTimeUnit = TimeUnit.SECONDS;
@@ -66,7 +66,7 @@ public class RxWebSocket {
         Utils.isLog = builder.isLog;
         reconnectInterval = builder.reconnectInterval;
         reconnectIntervalTimeUnit = builder.reconnectIntervalTimeUnit;
-        logTag = builder.logTag;
+        TAG = builder.logTag;
         client = builder.client;
         sslSocketFactory = builder.sslSocketFactory;
         trustManager = builder.trustManager;
@@ -118,7 +118,7 @@ public class RxWebSocket {
      */
     public void setLog(boolean showLog, String logTag) {
         setLog(showLog);
-        this.logTag = logTag;
+        this.TAG = logTag;
     }
 
     /**
@@ -138,7 +138,7 @@ public class RxWebSocket {
      * @param timeUnit unit
      * @return
      */
-    public Observable<WebSocketInfo> getObservable(final long timeout, final TimeUnit timeUnit) {
+    public Observable<WebSocketWrapper> getObservable(final long timeout, final TimeUnit timeUnit) {
         if (observable == null) {
             observable = Observable.create(new WebSocketOnSubscribe())
                     //自动重连
@@ -158,70 +158,68 @@ public class RxWebSocket {
                     .doOnDispose(new Action() {
                         @Override
                         public void run() throws Exception {
-                            Utils.log(logTag, "OnDispose");
+                            Utils.log(TAG, "OnDispose");
                         }
                     })
-                    .doOnNext(new Consumer<WebSocketInfo>() {
+                    .doOnNext(new Consumer<WebSocketWrapper>() {
                         @Override
-                        public void accept(WebSocketInfo webSocketInfo) throws Exception {
-                            if (webSocketInfo.isOnOpen()) {
-                                webSocket = webSocketInfo.getWebSocket();
+                        public void accept(WebSocketWrapper webSocketWrapper) throws Exception {
+                            if (webSocketWrapper.isOnOpen()) {
+                                webSocket = webSocketWrapper.getWebSocket();
                             }
                         }
                     })
                     .share()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
-        } else {
-            if (webSocket != null) {
-                observable = observable.startWith(new WebSocketInfo(webSocket, true));
-            }
+        } else if (webSocket != null) {
+            observable = observable.startWith(new WebSocketWrapper(webSocket, true));
         }
         return observable;
     }
 
-    public Observable<WebSocketInfo> getObservable() {
+    public Observable<WebSocketWrapper> getObservable() {
         return getObservable(30, TimeUnit.DAYS);
     }
 
     public Observable<String> getWebSocketString() {
         return getObservable()
-                .filter(new Predicate<WebSocketInfo>() {
+                .filter(new Predicate<WebSocketWrapper>() {
                     @Override
-                    public boolean test(@NonNull WebSocketInfo webSocketInfo) throws Exception {
-                        return webSocketInfo.getString() != null;
+                    public boolean test(@NonNull WebSocketWrapper webSocketWrapper) throws Exception {
+                        return webSocketWrapper.getString() != null;
                     }
                 })
-                .map(new Function<WebSocketInfo, String>() {
+                .map(new Function<WebSocketWrapper, String>() {
                     @Override
-                    public String apply(@NonNull WebSocketInfo webSocketInfo) throws Exception {
-                        return webSocketInfo.getString();
+                    public String apply(@NonNull WebSocketWrapper webSocketWrapper) throws Exception {
+                        return webSocketWrapper.getString();
                     }
                 });
     }
 
     public Observable<ByteString> getWebSocketByteString() {
         return getObservable()
-                .filter(new Predicate<WebSocketInfo>() {
+                .filter(new Predicate<WebSocketWrapper>() {
                     @Override
-                    public boolean test(@NonNull WebSocketInfo webSocketInfo) throws Exception {
-                        return webSocketInfo.getByteString() != null;
+                    public boolean test(@NonNull WebSocketWrapper webSocketWrapper) throws Exception {
+                        return webSocketWrapper.getByteString() != null;
                     }
                 })
-                .map(new Function<WebSocketInfo, ByteString>() {
+                .map(new Function<WebSocketWrapper, ByteString>() {
                     @Override
-                    public ByteString apply(WebSocketInfo webSocketInfo) throws Exception {
-                        return webSocketInfo.getByteString();
+                    public ByteString apply(WebSocketWrapper webSocketWrapper) throws Exception {
+                        return webSocketWrapper.getByteString();
                     }
                 });
     }
 
     public Observable<WebSocket> getWebSocketObservable() {
         return getObservable()
-                .map(new Function<WebSocketInfo, WebSocket>() {
+                .map(new Function<WebSocketWrapper, WebSocket>() {
                     @Override
-                    public WebSocket apply(@NonNull WebSocketInfo webSocketInfo) throws Exception {
-                        return webSocketInfo.getWebSocket();
+                    public WebSocket apply(@NonNull WebSocketWrapper webSocketWrapper) throws Exception {
+                        return webSocketWrapper.getWebSocket();
                     }
                 });
     }
@@ -268,7 +266,7 @@ public class RxWebSocket {
             @Override
             public void run() {
                 if (isLog) {
-                    Log.d(logTag, " send-->" + message + "-->Thread-->" + Thread.currentThread().getName());
+                    Log.d(TAG, " send-->" + message + "-->Thread-->" + Thread.currentThread().getName());
                 }
 
                 if (webSocket != null) {
@@ -288,7 +286,7 @@ public class RxWebSocket {
             @Override
             public void run() {
                 if (isLog) {
-                    Log.d(logTag, " send-->" + byteString.utf8() + "-->Thread-->" + Thread.currentThread().getName());
+                    Log.d(TAG, " send-->" + byteString.utf8() + "-->Thread-->" + Thread.currentThread().getName());
                 }
 
                 if (webSocket != null) {
@@ -350,54 +348,53 @@ public class RxWebSocket {
         this.url = url;
     }
 
-    private final class WebSocketOnSubscribe implements ObservableOnSubscribe<WebSocketInfo> {
+    private final class WebSocketOnSubscribe implements ObservableOnSubscribe<WebSocketWrapper> {
 
         @Override
-        public void subscribe(@NonNull ObservableEmitter<WebSocketInfo> emitter) throws Exception {
+        public void subscribe(@NonNull ObservableEmitter<WebSocketWrapper> emitter) throws Exception {
             if (webSocket != null) {
                 //降低重连频率
                 if (!"main".equals(Thread.currentThread().getName())) {
                     long ms = reconnectIntervalTimeUnit.toMillis(reconnectInterval);
                     SystemClock.sleep(ms == 0 ? 5000 : ms);
-                    emitter.onNext(WebSocketInfo.createReconnect());
+                    emitter.onNext(WebSocketWrapper.createReconnect());
                 }
             }
 
             initWebSocket(emitter);
         }
 
-        private void initWebSocket(final ObservableEmitter<WebSocketInfo> emitter) {
+        private void initWebSocket(final ObservableEmitter<WebSocketWrapper> emitter) {
             webSocket = getClient().newWebSocket(getRequest(url), new WebSocketListener() {
                 @Override
                 public void onOpen(final WebSocket webSocket, Response response) {
                     heartbeat();
-                    Utils.log(logTag, "onOpen-->" + response.toString());
+                    Utils.log(TAG, "onOpen-->" + response.toString());
                     if (!emitter.isDisposed()) {
-                        emitter.onNext(new WebSocketInfo(webSocket, true));
+                        emitter.onNext(new WebSocketWrapper(webSocket, true));
                     }
                 }
 
                 @Override
                 public void onMessage(WebSocket webSocket, String text) {
-                    Utils.log(logTag, "onMessage-->" + text);
+                    Utils.log(TAG, "onMessage-->" + text);
                     if (!emitter.isDisposed()) {
-                        emitter.onNext(new WebSocketInfo(webSocket, text));
+                        emitter.onNext(new WebSocketWrapper(webSocket, text));
                     }
                 }
 
                 @Override
                 public void onMessage(WebSocket webSocket, ByteString bytes) {
-                    Utils.log(logTag, "onMessage-->" + bytes.toString());
+                    Utils.log(TAG, "onMessage-->" + bytes.toString());
                     if (!emitter.isDisposed()) {
-                        emitter.onNext(new WebSocketInfo(webSocket, bytes));
+                        emitter.onNext(new WebSocketWrapper(webSocket, bytes));
                     }
                 }
 
                 @Override
                 public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                    Utils.log(logTag, "onFailure-->" + "Throwable-->" + t.toString()
-                                    + "WebSocket-->" + webSocket.request().toString()
-                            /* + "Response-->" + response.toString()*/);
+                    t.printStackTrace();
+                    Utils.log(TAG, "onFailure-->" + "Throwable:" + t.toString());
                     if (!emitter.isDisposed()) {
                         emitter.onError(t);
                     }
@@ -405,21 +402,19 @@ public class RxWebSocket {
 
                 @Override
                 public void onClosing(WebSocket webSocket, int code, String reason) {
-                    Utils.log(logTag, "onClosing-->" + "WebSocket-->" + webSocket.request().toString()
-                            + "code-->" + code + "reason-->" + reason);
+                    Utils.log(TAG, "onClosing-->" + "code:" + code + "reason:" + reason);
                     webSocket.close(1000, null);
 
                     if (!emitter.isDisposed()) {
-                        WebSocketInfo webSocketInfo = new WebSocketInfo(webSocket);
-                        webSocketInfo.setOnClosing(true);
-                        emitter.onNext(webSocketInfo);
+                        WebSocketWrapper webSocketWrapper = new WebSocketWrapper(webSocket);
+                        webSocketWrapper.setOnClosing(true);
+                        emitter.onNext(webSocketWrapper);
                     }
                 }
 
                 @Override
                 public void onClosed(WebSocket webSocket, int code, String reason) {
-                    Utils.log(logTag, "onClosed-->" + "WebSocket-->" + webSocket.request().toString()
-                            + "code-->" + code + "reason-->" + reason);
+                    Utils.log(TAG, "onClosed-->" + "code:" + code + "reason:" + reason);
                     if (!emitter.isDisposed()) {
                         emitter.onComplete();
                     }
@@ -429,7 +424,7 @@ public class RxWebSocket {
                 @Override
                 public void cancel() throws Exception {
                     webSocket.close(3000, "close WebSocket");
-                    Utils.log(logTag, url + " --> cancel");
+                    Utils.log(TAG, "cancel-->" + url);
                 }
             });
         }

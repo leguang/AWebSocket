@@ -15,7 +15,7 @@ import okio.ByteString;
  * @description:
  */
 
-public abstract class WebSocketSubscriber implements Observer<WebSocketInfo> {
+public abstract class WebSocketSubscriber implements Observer<WebSocketWrapper> {
     private boolean hasOpened;
     protected Disposable disposable;
 
@@ -25,17 +25,17 @@ public abstract class WebSocketSubscriber implements Observer<WebSocketInfo> {
     }
 
     @Override
-    public final void onNext(@NonNull WebSocketInfo webSocketInfo) {
-        if (webSocketInfo.isOnOpen()) {
+    public final void onNext(@NonNull WebSocketWrapper webSocketWrapper) {
+        if (webSocketWrapper.isOnOpen()) {
             hasOpened = true;
-            onOpen(webSocketInfo.getWebSocket());
-        } else if (webSocketInfo.getString() != null) {
-            onMessage(webSocketInfo.getString());
-        } else if (webSocketInfo.getByteString() != null) {
-            onMessage(webSocketInfo.getByteString());
-        } else if (webSocketInfo.isOnReconnect()) {
+            onOpen(webSocketWrapper.getWebSocket());
+        } else if (webSocketWrapper.getString() != null) {
+            onMessage(webSocketWrapper.getString());
+        } else if (webSocketWrapper.getByteString() != null) {
+            onMessage(webSocketWrapper.getByteString());
+        } else if (webSocketWrapper.isOnReconnect()) {
             onReconnect();
-        } else if (webSocketInfo.isOnClosing()) {
+        } else if (webSocketWrapper.isOnClosing()) {
             onClosing();
         }
     }

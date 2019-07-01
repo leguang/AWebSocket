@@ -13,18 +13,18 @@ import okio.ByteString;
  * @time: 2018/7/13 0013 10:41
  * @description:
  */
-public final class WsHelper {
-    private static WsHelper instance;
+public final class WebSocketManager {
+    private static WebSocketManager instance;
     private RxWebSocket rxWebSocket;
 
-    private WsHelper() {
+    private WebSocketManager() {
     }
 
-    public static WsHelper getInstance() {
+    public static WebSocketManager getInstance() {
         if (instance == null) {
-            synchronized (WsHelper.class) {
+            synchronized (WebSocketManager.class) {
                 if (instance == null) {
-                    instance = new WsHelper();
+                    instance = new WebSocketManager();
                 }
             }
         }
@@ -35,7 +35,7 @@ public final class WsHelper {
         return rxWebSocket;
     }
 
-    public WsHelper setRxWebSocket(RxWebSocket rxWebSocket) {
+    public WebSocketManager setRxWebSocket(RxWebSocket rxWebSocket) {
         this.rxWebSocket = rxWebSocket;
         return this;
     }
@@ -49,7 +49,7 @@ public final class WsHelper {
                 .getWebSocket();
     }
 
-    public static Observable<WebSocketInfo> getObservable() {
+    public static Observable<WebSocketWrapper> getObservable() {
         if (getInstance().getRxWebSocket() == null) {
             return null;
         }

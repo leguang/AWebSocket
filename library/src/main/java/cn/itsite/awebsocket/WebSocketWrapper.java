@@ -11,7 +11,7 @@ import okio.ByteString;
  * @time: 2018/7/13 0013 10:41
  * @description:
  */
-public class WebSocketInfo {
+public class WebSocketWrapper {
     private WebSocket webSocket;
     private String text;
     private ByteString byteString;
@@ -19,30 +19,30 @@ public class WebSocketInfo {
     private boolean onClosing;
     private boolean onReconnect;
 
-    private WebSocketInfo() {
+    private WebSocketWrapper() {
     }
 
-    WebSocketInfo(WebSocket webSocket) {
+    WebSocketWrapper(WebSocket webSocket) {
         this.webSocket = webSocket;
     }
 
-    WebSocketInfo(WebSocket webSocket, boolean onOpen) {
+    WebSocketWrapper(WebSocket webSocket, boolean onOpen) {
         this.webSocket = webSocket;
         this.onOpen = onOpen;
     }
 
-    WebSocketInfo(WebSocket webSocket, String text) {
+    WebSocketWrapper(WebSocket webSocket, String text) {
         this.webSocket = webSocket;
         this.text = text;
     }
 
-    WebSocketInfo(WebSocket webSocket, ByteString byteString) {
+    WebSocketWrapper(WebSocket webSocket, ByteString byteString) {
         this.webSocket = webSocket;
         this.byteString = byteString;
     }
 
-    static WebSocketInfo createReconnect() {
-        WebSocketInfo socketInfo = new WebSocketInfo();
+    static WebSocketWrapper createReconnect() {
+        WebSocketWrapper socketInfo = new WebSocketWrapper();
         socketInfo.onReconnect = true;
         return socketInfo;
     }

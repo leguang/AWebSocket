@@ -13,16 +13,16 @@ import okio.ByteString;
  * @time: 2018/7/13 0013 10:41
  * @description:
  */
-public abstract class WebSocketConsumer implements Consumer<WebSocketInfo> {
+public abstract class WebSocketConsumer implements Consumer<WebSocketWrapper> {
 
     @Override
-    public void accept(WebSocketInfo webSocketInfo) throws Exception {
-        if (webSocketInfo.isOnOpen()) {
-            onOpen(webSocketInfo.getWebSocket());
-        } else if (webSocketInfo.getString() != null) {
-            onMessage(webSocketInfo.getString());
-        } else if (webSocketInfo.getByteString() != null) {
-            onMessage(webSocketInfo.getByteString());
+    public void accept(WebSocketWrapper webSocketWrapper) throws Exception {
+        if (webSocketWrapper.isOnOpen()) {
+            onOpen(webSocketWrapper.getWebSocket());
+        } else if (webSocketWrapper.getString() != null) {
+            onMessage(webSocketWrapper.getString());
+        } else if (webSocketWrapper.getByteString() != null) {
+            onMessage(webSocketWrapper.getByteString());
         }
     }
 
