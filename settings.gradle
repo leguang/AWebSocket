@@ -1,1 +1,1 @@
-include ':app', ':awebsoket'
+include ':app', ':library'

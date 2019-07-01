@@ -1,4 +1,4 @@
-package cn.itsite.awebsoket;
+package cn.itsite.awebsocket;
 
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;

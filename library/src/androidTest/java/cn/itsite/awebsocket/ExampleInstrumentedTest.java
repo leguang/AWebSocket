@@ -1,4 +1,4 @@
-package cn.itsite.awebsoket;
+package cn.itsite.awebsocket;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("cn.itsite.awebsoket.test", appContext.getPackageName());
+        assertEquals("cn.itsite.awebsocket.test", appContext.getPackageName());
     }
 }

@@ -1,4 +1,4 @@
-package cn.itsite.awebsoket;
+package cn.itsite.awebsocket;
 
 import android.os.SystemClock;
 import android.util.Log;

@@ -1,4 +1,4 @@
-package cn.itsite.awebsoket;
+package cn.itsite.awebsocket;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
