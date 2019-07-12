@@ -15,7 +15,7 @@ public class Utils {
 
     public static void log(String tag, String msg) {
         if (isLog) {
-            Log.e(tag, msg);
+            Log.d(tag, msg);
         }
     }
 }
