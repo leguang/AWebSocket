@@ -47,6 +47,7 @@ public class RxWebSocket {
     private WebSocket webSocket;
     private Observable<WebSocketWrapper> observable;
     private boolean isLog;
+    private boolean connecting;
     private long reconnectInterval = 1;
     private TimeUnit reconnectIntervalTimeUnit = TimeUnit.SECONDS;
     private String url;
@@ -369,6 +370,7 @@ public class RxWebSocket {
                 @Override
                 public void onOpen(final WebSocket webSocket, Response response) {
                     heartbeat();
+                    setConnecting(true);
                     Utils.log(TAG, "onOpen-->" + response.toString());
                     if (!emitter.isDisposed()) {
                         emitter.onNext(new WebSocketWrapper(webSocket, true));
@@ -377,6 +379,7 @@ public class RxWebSocket {
 
                 @Override
                 public void onMessage(WebSocket webSocket, String text) {
+                    setConnecting(true);
                     Utils.log(TAG, "onMessage-->" + text);
                     if (!emitter.isDisposed()) {
                         emitter.onNext(new WebSocketWrapper(webSocket, text));
@@ -386,6 +389,8 @@ public class RxWebSocket {
                 @Override
                 public void onMessage(WebSocket webSocket, ByteString bytes) {
                     Utils.log(TAG, "onMessage-->" + bytes.toString());
+                    setConnecting(true);
+
                     if (!emitter.isDisposed()) {
                         emitter.onNext(new WebSocketWrapper(webSocket, bytes));
                     }
@@ -394,6 +399,7 @@ public class RxWebSocket {
                 @Override
                 public void onFailure(WebSocket webSocket, Throwable t, Response response) {
                     t.printStackTrace();
+                    setConnecting(false);
                     Utils.log(TAG, "onFailure-->" + "Throwable:" + t.toString());
                     if (!emitter.isDisposed()) {
                         emitter.onError(t);
@@ -404,7 +410,7 @@ public class RxWebSocket {
                 public void onClosing(WebSocket webSocket, int code, String reason) {
                     Utils.log(TAG, "onClosing-->" + "code:" + code + "reason:" + reason);
                     webSocket.close(1000, null);
-
+                    setConnecting(false);
                     if (!emitter.isDisposed()) {
                         WebSocketWrapper webSocketWrapper = new WebSocketWrapper(webSocket);
                         webSocketWrapper.setOnClosing(true);
@@ -414,6 +420,7 @@ public class RxWebSocket {
 
                 @Override
                 public void onClosed(WebSocket webSocket, int code, String reason) {
+                    setConnecting(false);
                     Utils.log(TAG, "onClosed-->" + "code:" + code + "reason:" + reason);
                     if (!emitter.isDisposed()) {
                         emitter.onComplete();
@@ -460,5 +467,13 @@ public class RxWebSocket {
 
     public int subscriberSize() {
         return mCompositeDisposable == null ? 0 : mCompositeDisposable.size();
+    }
+
+    public boolean isConnecting() {
+        return connecting;
+    }
+
+    protected void setConnecting(boolean connecting) {
+        this.connecting = connecting;
     }
 }
