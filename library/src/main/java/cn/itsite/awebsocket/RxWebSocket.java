@@ -430,7 +430,10 @@ public class RxWebSocket {
             emitter.setCancellable(new Cancellable() {
                 @Override
                 public void cancel() throws Exception {
-                    webSocket.close(3000, "close WebSocket");
+                    //重连后会先走WebSocketOnSubscribe中的subscribe，再走这里，
+                    // 这样会致使webSocket为新建的webSocket，然后再发一个close，又主动关闭了，
+                    // 因此不能这么设计。
+//                    webSocket.close(3000, "close WebSocket");
                     Utils.log(TAG, "cancel-->" + url);
                 }
             });
